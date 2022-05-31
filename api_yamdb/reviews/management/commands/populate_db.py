@@ -1,6 +1,7 @@
-from django.core.management.base import BaseCommand
 import csv
 import os
+
+from django.core.management.base import BaseCommand
 
 from api_yamdb.settings import DATA_DIR
 from users.models import User
