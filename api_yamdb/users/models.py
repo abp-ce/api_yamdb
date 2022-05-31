@@ -7,10 +7,11 @@ class User(AbstractUser):
     MODERATOR = 'mo'
     ADMIN = 'ad'
     ROLE_CHOICES = (
-        ('us', 'user',),
-        ('mo', 'moderator'),
-        ('ad', 'admin')
+        (USER, 'user',),
+        (MODERATOR, 'moderator'),
+        (ADMIN, 'admin')
     )
+    email = models.EmailField(unique=True)
     role = models.CharField(
         max_length=2,
         choices=ROLE_CHOICES,
