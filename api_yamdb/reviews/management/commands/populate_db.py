@@ -3,6 +3,7 @@ import csv
 import os
 
 from api_yamdb.settings import DATA_DIR
+from users.models import User
 
 
 class Command(BaseCommand):
@@ -18,7 +19,15 @@ class Command(BaseCommand):
             )
             filename = os.path.join(DATA_DIR, table + '.csv')
             self.stdout.write(filename)
+            users = []
             with open(filename) as csvfile:
                 reader = csv.DictReader(csvfile, delimiter=',')
                 for row in reader:
-                    self.stdout.write(row['id'])
+                    users.append(User(**row))
+            self.stdout.write(
+                f'Записей до вставки: {User.objects.all().count()}'
+            )
+            User.objects.bulk_create(users)
+            self.stdout.write(
+                f'Записей после вставки: {User.objects.all().count()}'
+            )
