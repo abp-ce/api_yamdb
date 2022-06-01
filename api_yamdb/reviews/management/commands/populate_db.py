@@ -45,13 +45,6 @@ class Command(BaseCommand):
                         row['category'] = Category.objects.get(
                             pk=row['category']
                         )
-                    if table == 'genre_title':
-                        row['title_id'] = Title.objects.get(
-                            pk=row['title_id']
-                        )
-                        row['genre_id'] = Genre.objects.get(
-                            pk=row['genre_id']
-                        )
                     if table == 'review':
                         print(row)
                         row['author'] = User.objects.get(
