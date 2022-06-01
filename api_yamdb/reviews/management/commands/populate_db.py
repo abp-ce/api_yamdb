@@ -54,17 +54,11 @@ class Command(BaseCommand):
                         )
                     if table == 'review':
                         print(row)
-                        # row['title_id'] = Title.objects.get(
-                        #     pk=row['title_id']
-                        # )
                         row['author'] = User.objects.get(
                             pk=row['author']
                         )
                     if table == 'comments':
                         print(row)
-                        # row['title_id'] = Title.objects.get(
-                        #     pk=row['title_id']
-                        # )
                         row['author'] = User.objects.get(
                             pk=row['author']
                         )
