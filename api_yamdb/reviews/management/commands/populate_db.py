@@ -1,9 +1,9 @@
 import csv
 import os
 
+from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from api_yamdb.settings import DATA_DIR
 from reviews.models import User, Category, Genre, Title, GenreTitle
 
 FILE_MODEL_DICT = {
@@ -31,7 +31,7 @@ class Command(BaseCommand):
             self.stdout.write(
                 self.style.SUCCESS(f'Обрабатываемая таблица: {table}')
             )
-            filename = os.path.join(DATA_DIR, table + '.csv')
+            filename = os.path.join(settings.DATA_DIR, table + '.csv')
             self.stdout.write(filename)
             Model = FILE_MODEL_DICT[table]
             data_list = []
