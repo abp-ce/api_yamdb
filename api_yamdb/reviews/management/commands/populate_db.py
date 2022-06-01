@@ -4,10 +4,14 @@ import os
 from django.core.management.base import BaseCommand
 
 from api_yamdb.settings import DATA_DIR
-from users.models import User
+from reviews.models import User, Category, Genre, Title, GenreTitle
 
 FILE_MODEL_DICT = {
     'users': User,
+    'category': Category,
+    'genre': Genre,
+    'titles': Title,
+    'genre_title': GenreTitle,
 }
 
 
@@ -32,8 +36,19 @@ class Command(BaseCommand):
             Model = FILE_MODEL_DICT[table]
             data_list = []
             with open(filename) as csvfile:
-                reader = csv.DictReader(csvfile, delimiter=',')
+                reader = csv.DictReader(csvfile, delimiter=',', quotechar='"')
                 for row in reader:
+                    if table == 'titles':
+                        row['category'] = Category.objects.get(
+                            pk=row['category']
+                        )
+                    if table == 'genre_title':
+                        row['title_id'] = Title.objects.get(
+                            pk=row['title_id']
+                        )
+                        row['genre_id'] = Genre.objects.get(
+                            pk=row['genre_id']
+                        )
                     data_list.append(Model(**row))
             if options['delete']:
                 self.stdout.write(

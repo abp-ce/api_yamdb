@@ -1,7 +1,29 @@
 import datetime
 
+from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+
+
+class User(AbstractUser):
+    USER = 'us'
+    MODERATOR = 'mo'
+    ADMIN = 'ad'
+    ROLE_CHOICES = (
+        (USER, 'user',),
+        (MODERATOR, 'moderator'),
+        (ADMIN, 'admin')
+    )
+    email = models.EmailField(unique=True)
+    role = models.CharField(
+        max_length=2,
+        choices=ROLE_CHOICES,
+        default=USER,
+    )
+    bio = models.TextField(
+        'Биография',
+        blank=True,
+    )
 
 
 class Category(models.Model):
@@ -36,6 +58,7 @@ class Title(models.Model):
         Category,
         on_delete=models.SET_NULL,
         related_name='titles',
+        null=True,
     )
     description = models.TextField(
         blank=True,
@@ -63,7 +86,7 @@ class GenreTitle(models.Model):
             )
         ]
 
-
+"""
 class Review(models.Model):
     title = models.ForeignKey(
         Title,
@@ -92,3 +115,4 @@ class Comment(models.Model):
         auto_now_add=True,
         db_index=True
     )
+"""
