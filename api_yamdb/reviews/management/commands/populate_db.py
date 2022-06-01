@@ -4,7 +4,8 @@ import os
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from reviews.models import User, Category, Genre, Title, GenreTitle
+from reviews.models import (User, Category, Genre, Title,
+                            GenreTitle, Review, Comment)
 
 FILE_MODEL_DICT = {
     'users': User,
@@ -12,6 +13,8 @@ FILE_MODEL_DICT = {
     'genre': Genre,
     'titles': Title,
     'genre_title': GenreTitle,
+    'review': Review,
+    'comments': Comment,
 }
 
 
@@ -48,6 +51,22 @@ class Command(BaseCommand):
                         )
                         row['genre_id'] = Genre.objects.get(
                             pk=row['genre_id']
+                        )
+                    if table == 'review':
+                        print(row)
+                        # row['title_id'] = Title.objects.get(
+                        #     pk=row['title_id']
+                        # )
+                        row['author'] = User.objects.get(
+                            pk=row['author']
+                        )
+                    if table == 'comments':
+                        print(row)
+                        # row['title_id'] = Title.objects.get(
+                        #     pk=row['title_id']
+                        # )
+                        row['author'] = User.objects.get(
+                            pk=row['author']
                         )
                     data_list.append(Model(**row))
             if options['delete']:
