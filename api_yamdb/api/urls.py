@@ -1,8 +1,11 @@
 from django.urls import include, path
 from rest_framework import routers
+
+from .views import (CategoryViewSet, UserViewSet, YamdbTokenObtainPairView,
+                    request_email)
+
 # from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .views import CategoryViewSet, UserViewSet, YamdbTokenObtainPairView, request_email
 
 app_name = 'api'
 

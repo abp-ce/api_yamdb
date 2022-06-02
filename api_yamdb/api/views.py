@@ -1,16 +1,15 @@
+from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.core.validators import validate_email
-from django.core.exceptions import ValidationError
+from rest_framework import filters, status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.response import Response
-from rest_framework import status
-
-from rest_framework import filters
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from reviews.models import Category, Genre, GenreTitle, Title, User
+
 from .permissions import IsAdminOrReadOnly
 from .serializers import (CategorySerializer, UserSerializer,
                           YamdbTokenObtainPairSerializer)
@@ -90,4 +89,3 @@ class CategoryViewSet(CreateListDestroyViewSet):
     pagination_class = PageNumberPagination
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
-
