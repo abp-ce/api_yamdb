@@ -1,10 +1,11 @@
 import csv
 import os
 
+from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from api_yamdb.settings import DATA_DIR
-from reviews.models import User, Category, Genre, Title, GenreTitle
+from reviews.models import (User, Category, Genre, Title,
+                            GenreTitle, Review, Comment)
 
 FILE_MODEL_DICT = {
     'users': User,
@@ -12,6 +13,8 @@ FILE_MODEL_DICT = {
     'genre': Genre,
     'titles': Title,
     'genre_title': GenreTitle,
+    'review': Review,
+    'comments': Comment,
 }
 
 
@@ -31,7 +34,7 @@ class Command(BaseCommand):
             self.stdout.write(
                 self.style.SUCCESS(f'Обрабатываемая таблица: {table}')
             )
-            filename = os.path.join(DATA_DIR, table + '.csv')
+            filename = os.path.join(settings.DATA_DIR, table + '.csv')
             self.stdout.write(filename)
             Model = FILE_MODEL_DICT[table]
             data_list = []
@@ -42,12 +45,15 @@ class Command(BaseCommand):
                         row['category'] = Category.objects.get(
                             pk=row['category']
                         )
-                    if table == 'genre_title':
-                        row['title_id'] = Title.objects.get(
-                            pk=row['title_id']
+                    if table == 'review':
+                        print(row)
+                        row['author'] = User.objects.get(
+                            pk=row['author']
                         )
-                        row['genre_id'] = Genre.objects.get(
-                            pk=row['genre_id']
+                    if table == 'comments':
+                        print(row)
+                        row['author'] = User.objects.get(
+                            pk=row['author']
                         )
                     data_list.append(Model(**row))
             if options['delete']:
