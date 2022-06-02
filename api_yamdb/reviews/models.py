@@ -4,6 +4,8 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
+CHOICES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
 
 class User(AbstractUser):
     USER = 'us'
@@ -94,8 +96,12 @@ class Review(models.Model):
         related_name='review',
     )
     text = models.TextField()
-    author = models.ForeignKey(User, on_delete = models.CASCADE)
-    score = models.SmallIntegerField()
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE
+    )
+    score = models.SmallIntegerField(
+        choices=CHOICES
+    )
     pub_date = models.DateTimeField(
         'Дата добавления',
         auto_now_add=True,
@@ -106,7 +112,7 @@ class Review(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['author', 'title'],
-                name='unique_review_title'
+                name='unique_review'
             )
         ]
 
@@ -118,7 +124,7 @@ class Comment(models.Model):
         related_name='comments'
     )
     text = models.TextField()
-    author = models.ForeignKey(User, on_delete = models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     pub_date = models.DateTimeField(
         'Дата добавления',
         auto_now_add=True,
