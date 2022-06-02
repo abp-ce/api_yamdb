@@ -3,25 +3,14 @@ from django.core.mail import send_mail
 from django.core.validators import validate_email
 from rest_framework import filters, status
 from rest_framework.decorators import api_view, permission_classes
-<<<<<<< HEAD
-=======
-from rest_framework.response import Response
-from rest_framework import status
-
-from rest_framework import filters, viewsets
->>>>>>> master
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from reviews.models import Category, Genre, GenreTitle, Title, User
-<<<<<<< HEAD
+from reviews.models import Category, Genre, GenreTitle, Title, User, Review, Comment
 
 from .permissions import IsAdminOrReadOnly
-=======
-from .permissions import IsAdminOrReadOnly, IsAdminRoleOnly
->>>>>>> master
 from .serializers import (CategorySerializer, UserSerializer,
                           UserSignupSerializer, YamdbTokenObtainPairSerializer)
 from .viewsets import CreateListDestroyViewSet, CreateViewSet
@@ -90,3 +79,15 @@ class CategoryViewSet(CreateListDestroyViewSet):
     pagination_class = PageNumberPagination
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
+
+
+class ReviewViewSet(CreateListDestroyViewSet):
+    queryset = Review.objects.all()
+    serializer_class = CategorySerializer
+    pagination_class = PageNumberPagination
+
+
+class CommentViewSet(CreateListDestroyViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CategorySerializer
+    pagination_class = PageNumberPagination
