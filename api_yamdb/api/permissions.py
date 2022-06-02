@@ -21,3 +21,21 @@ class IsAdminOrReadOnly(permissions.BasePermission):
         return (
             request.user.is_authenticated and request.user.role == User.ADMIN
         )
+
+
+class IsAdminRoleOnly(permissions.BasePermission):
+    """
+    Разрешение позволяющее добавлять/редактировать/удалять его только
+     пользователю superuser или с ролью ADMIN. Остальные не имеют доступа.
+    """
+    def has_permission(self, request, view):
+        return (
+            (request.user.is_authenticated and request.user.role == User.ADMIN)
+            or request.user.is_superuser
+        )
+
+    def has_object_permission(self, request, view, obj):
+        return (
+            request.user.is_authenticated
+            and request.user.username == obj.username
+        )

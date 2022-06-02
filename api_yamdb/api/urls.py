@@ -10,6 +10,7 @@ router = routers.DefaultRouter()
 # router.register(r'auth/signup', UserViewSet, basename='signup')
 # router.register(r'auth/token', YamdbTokenObtainPairView.as_view(),
 #                 basename='token')
+router.register(r'users', UserViewSet, basename='userss')
 router.register(r'categories', CategoryViewSet, basename='categories')
 
 urlpatterns = [

@@ -4,11 +4,18 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from reviews.models import Category, Genre, GenreTitle, Title, User
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSignupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
         fields = ('username', 'email')
+
+
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'first_name', 'last_name', 'bio', 'role')
 
 
 class YamdbTokenObtainPairSerializer(TokenObtainPairSerializer):

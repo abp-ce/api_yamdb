@@ -6,9 +6,9 @@ from django.db import models
 
 
 class User(AbstractUser):
-    USER = 'us'
-    MODERATOR = 'mo'
-    ADMIN = 'ad'
+    USER = 'user'
+    MODERATOR = 'moderator'
+    ADMIN = 'admin'
     ROLE_CHOICES = (
         (USER, 'user',),
         (MODERATOR, 'moderator'),
@@ -24,6 +24,9 @@ class User(AbstractUser):
         'Биография',
         blank=True,
     )
+
+    def __str__(self):
+        return self.username
 
     class Meta:
         constraints = [
