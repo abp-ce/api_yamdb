@@ -1,19 +1,18 @@
+from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.core.validators import validate_email
-from django.core.exceptions import ValidationError
+from rest_framework import filters, status, viewsets
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.response import Response
-from rest_framework import status
-
-from rest_framework import filters, viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from reviews.models import Category, Genre, GenreTitle, Title, User
 from .permissions import IsAdminOrReadOnly, IsAdminRoleOnly
-from .serializers import (CategorySerializer, UserSerializer,
-                          UserSignupSerializer, YamdbTokenObtainPairSerializer)
+from .serializers import (CategorySerializer, GenreSerializer, TitleSerializer,
+                          UserSerializer, UserSignupSerializer,
+                          YamdbTokenObtainPairSerializer)
 from .viewsets import CreateListDestroyViewSet, CreateViewSet
 
 
@@ -80,4 +79,21 @@ class CategoryViewSet(CreateListDestroyViewSet):
     pagination_class = PageNumberPagination
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
+    lookup_field = 'slug'
 
+
+class GenreViewSet(CreateListDestroyViewSet):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    pagination_class = PageNumberPagination
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
+    lookup_field = 'slug'
+
+
+class TitleViewSet(viewsets.ModelViewSet):
+    queryset = Title.objects.all()
+    serializer_class = TitleSerializer
+    permission_classes = (AllowAny,)
+    pagination_class = PageNumberPagination
