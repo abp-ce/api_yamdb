@@ -1,7 +1,7 @@
 import datetime
 
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MaxValueValidator
 from django.db import models
 
 
@@ -51,7 +51,6 @@ class Title(models.Model):
     name = models.TextField()
     year = models.PositiveSmallIntegerField(
         validators=(
-            MinValueValidator(1988),
             MaxValueValidator(datetime.datetime.now().year),
         )
     )
@@ -82,7 +81,7 @@ class GenreTitle(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['title', 'genre'],
+                fields=('title', 'genre'),
                 name='unique_genre_title'
             )
         ]
@@ -95,18 +94,20 @@ class Review(models.Model):
         related_name='review',
     )
     text = models.TextField()
-    author = models.ForeignKey(User, on_delete = models.CASCADE)
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE
+    )
     score = models.SmallIntegerField()
     pub_date = models.DateTimeField(
         'Дата добавления',
         auto_now_add=True,
-        db_index=True
     )
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['author', 'title'],
+                fields=('author', 'title'),
                 name='unique_review_title'
             )
         ]
@@ -116,12 +117,13 @@ class Comment(models.Model):
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
-        related_name='comments'
+        related_name='comments',
     )
     text = models.TextField()
-    author = models.ForeignKey(User, on_delete = models.CASCADE)
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+    )
     pub_date = models.DateTimeField(
-        'Дата добавления',
         auto_now_add=True,
-        db_index=True
     )

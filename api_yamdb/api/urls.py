@@ -2,7 +2,7 @@ from django.urls import include, path
 from rest_framework import routers
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .views import UserViewSet, YamdbTokenObtainPairView
+from .views import CategoryViewSet, UserViewSet, YamdbTokenObtainPairView
 
 app_name = 'api'
 
@@ -10,6 +10,7 @@ router = routers.DefaultRouter()
 router.register(r'auth/signup', UserViewSet, basename='signup')
 # router.register(r'auth/token', YamdbTokenObtainPairView.as_view(),
 #                 basename='token')
+router.register(r'categories', CategoryViewSet, basename='categories')
 
 urlpatterns = [
     path('v1/', include(router.urls)),

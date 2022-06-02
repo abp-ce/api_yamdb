@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from reviews.models import User
+from reviews.models import Category, Genre, GenreTitle, Title, User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -21,3 +21,10 @@ class YamdbTokenObtainPairSerializer(TokenObtainPairSerializer):
 
     class Meta:
         fields = ('username', 'confirmation_code')
+
+
+class CategorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Category
+        fields = ('name', 'slug')

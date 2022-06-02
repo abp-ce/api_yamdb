@@ -1,10 +1,14 @@
 from django.core.mail import send_mail
+
+from rest_framework import filters
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .viewsets import CreateViewSet
-from reviews.models import User
-from .serializers import UserSerializer, YamdbTokenObtainPairSerializer
+from reviews.models import Category, Genre, GenreTitle, Title, User
+from .permissions import IsAdminOrReadOnly
+from .serializers import CategorySerializer, UserSerializer, YamdbTokenObtainPairSerializer
+from .viewsets import CreateListDestroyViewSet, CreateViewSet
 
 
 class UserViewSet(CreateViewSet):
@@ -31,3 +35,13 @@ class UserViewSet(CreateViewSet):
 
 class YamdbTokenObtainPairView(TokenObtainPairView):
     serializer_class = YamdbTokenObtainPairSerializer
+
+
+class CategoryViewSet(CreateListDestroyViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    pagination_class = PageNumberPagination
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
+
