@@ -24,6 +24,7 @@ class User(AbstractUser):
         'Биография',
         blank=True,
     )
+    # confirmation_code = models.CharField(max_length=6, null=True)
 
 
 class Category(models.Model):
