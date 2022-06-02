@@ -3,16 +3,27 @@ from django.core.mail import send_mail
 from django.core.validators import validate_email
 from rest_framework import filters, status
 from rest_framework.decorators import api_view, permission_classes
+<<<<<<< HEAD
+=======
+from rest_framework.response import Response
+from rest_framework import status
+
+from rest_framework import filters, viewsets
+>>>>>>> master
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from reviews.models import Category, Genre, GenreTitle, Title, User
+<<<<<<< HEAD
 
 from .permissions import IsAdminOrReadOnly
+=======
+from .permissions import IsAdminOrReadOnly, IsAdminRoleOnly
+>>>>>>> master
 from .serializers import (CategorySerializer, UserSerializer,
-                          YamdbTokenObtainPairSerializer)
+                          UserSignupSerializer, YamdbTokenObtainPairSerializer)
 from .viewsets import CreateListDestroyViewSet, CreateViewSet
 
 
@@ -30,7 +41,7 @@ def send_confirmation_code():
 @api_view(['POST'])
 @permission_classes((AllowAny, ))
 def request_email(request):
-    serializer = UserSerializer(data=request.data)
+    serializer = UserSignupSerializer(data=request.data)
     if 'username' not in serializer.initial_data:
         return Response('{ - username: [Отсутствует обязательное поле.] }',
                         status=status.HTTP_400_BAD_REQUEST)
@@ -41,6 +52,9 @@ def request_email(request):
         validate_email(serializer.initial_data['email'])
     except ValidationError as error:
         return Response(error,
+                        status=status.HTTP_400_BAD_REQUEST)
+    if serializer.initial_data['username'] == 'me':
+        return Response('Поле username не может быть me.',
                         status=status.HTTP_400_BAD_REQUEST)
     if User.objects.filter(
         username=serializer.initial_data['username']
@@ -56,26 +70,13 @@ def request_email(request):
                     status=status.HTTP_200_OK)
 
 
-class UserViewSet(CreateViewSet):
+class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [AllowAny]
-
-    def send_confirmation_code(self):
-        confirmation_code = 'asdftyui'
-        send_mail(
-            subject='Confirmation code',
-            message=confirmation_code,
-            from_email='fake@yamdb.fake',
-            recipient_list=['fake@yamdb.fake']
-        )
-        return confirmation_code
-
-    def perform_create(self, serializer):
-        user = User(username=self.request.data['username'],
-                    email=self.request.data['email'])
-        user.set_password(self.send_confirmation_code())
-        user.save()
+    permission_classes = [IsAdminRoleOnly]
+    pagination_class = PageNumberPagination
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('username',)
 
 
 class YamdbTokenObtainPairView(TokenObtainPairView):
