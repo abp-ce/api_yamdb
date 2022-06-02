@@ -1,9 +1,13 @@
 from django.core.mail import send_mail
+
+from rest_framework import filters
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny
 
-from .viewsets import CreateUpdateViewSet
-from reviews.models import User
-from .serializers import UserSerializer
+from reviews.models import Category, Genre, GenreTitle, Title, User
+from .permissions import IsAdminOrReadOnly
+from .serializers import CategorySerializer, UserSerializer
+from .viewsets import CreateListDestroyViewSet, CreateUpdateViewSet
 
 
 class UserViewSet(CreateUpdateViewSet):
@@ -26,3 +30,12 @@ class UserViewSet(CreateUpdateViewSet):
 
     def perform_update(self, serializer):
         serializer.save(password=self.send_password)
+
+
+class CategoryViewSet(CreateListDestroyViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    pagination_class = PageNumberPagination
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
