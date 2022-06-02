@@ -1,28 +1,33 @@
 from django.core.mail import send_mail
 from rest_framework.permissions import AllowAny
+from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .viewsets import CreateUpdateViewSet
+from .viewsets import CreateViewSet
 from reviews.models import User
-from .serializers import UserSerializer
+from .serializers import UserSerializer, YamdbTokenObtainPairSerializer
 
 
-class UserViewSet(CreateUpdateViewSet):
+class UserViewSet(CreateViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
 
-    def send_password():
-        password = 'asdftyui'
+    def send_confirmation_code(self):
+        confirmation_code = 'asdftyui'
         send_mail(
             subject='Confirmation code',
-            message=password,
+            message=confirmation_code,
             from_email='fake@yamdb.fake',
             recipient_list=['fake@yamdb.fake']
         )
-        return 'asdftyui'
+        return confirmation_code
 
     def perform_create(self, serializer):
-        serializer.save(password=self.send_password)
+        user = User(username=self.request.data['username'],
+                    email=self.request.data['email'])
+        user.set_password(self.send_confirmation_code())
+        user.save()
 
-    def perform_update(self, serializer):
-        serializer.save(password=self.send_password)
+
+class YamdbTokenObtainPairView(TokenObtainPairView):
+    serializer_class = YamdbTokenObtainPairSerializer
