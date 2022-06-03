@@ -34,12 +34,24 @@ def send_confirmation_code(user):
 def request_email(request):
     serializer = UserSignupSerializer(data=request.data)
     if not serializer.is_valid():
+        if (
+            'username' in serializer.errors
+            and 'email' in serializer.errors
+            and serializer.errors['username'][0].code == 'unique'
+            and serializer.errors['email'][0].code == 'unique'
+        ):
+            user = User.objects.get(
+                username=serializer.initial_data['username']
+            )
+            send_confirmation_code(user)
         return Response(serializer.errors,
                         status=status.HTTP_400_BAD_REQUEST)
-    user = User(username=serializer.validated_data['username'],
-                email=serializer.validated_data['email'])
-    send_confirmation_code(user)
+    user = User(
+        username=serializer.validated_data['username'],
+        email=serializer.validated_data['email']
+    )
     user.save()
+    send_confirmation_code(user)
     return Response(serializer.validated_data,
                     status=status.HTTP_200_OK)
 
