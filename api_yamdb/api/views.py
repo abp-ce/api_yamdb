@@ -1,20 +1,18 @@
-from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from rest_framework import filters, status, viewsets
-from rest_framework.decorators import api_view, permission_classes, action
-from rest_framework.generics import RetrieveUpdateAPIView
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from reviews.models import (Category, Genre, GenreTitle, Title, User,
-                            Review, Comment)
-
+from reviews.models import Category, Comment, Genre, Review, Title, User
 from .permissions import IsAdminOrReadOnly, IsAdminRoleOnly
-from .serializers import (CategorySerializer, UserSerializer,
-                          UserSignupSerializer, UserTokenSerializer)
+from .serializers import (CategorySerializer, GenreSerializer, TitleSerializer,
+                          UserSerializer, UserSignupSerializer,
+                          UserTokenSerializer)
 from .viewsets import CreateListDestroyViewSet, MeViewSet
 
 
@@ -100,6 +98,24 @@ class CategoryViewSet(CreateListDestroyViewSet):
     pagination_class = PageNumberPagination
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
+    lookup_field = 'slug'
+
+
+class GenreViewSet(CreateListDestroyViewSet):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    pagination_class = PageNumberPagination
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
+    lookup_field = 'slug'
+
+
+class TitleViewSet(viewsets.ModelViewSet):
+    queryset = Title.objects.all()
+    serializer_class = TitleSerializer
+    permission_classes = (AllowAny,)
+    pagination_class = PageNumberPagination
 
 
 class ReviewViewSet(CreateListDestroyViewSet):
