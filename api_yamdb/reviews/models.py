@@ -1,7 +1,7 @@
 import datetime
 
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 
@@ -108,7 +108,9 @@ class Review(models.Model):
         User,
         on_delete=models.CASCADE
     )
-    score = models.SmallIntegerField()
+    score = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(10)],
+    )
     pub_date = models.DateTimeField(
         'Дата добавления',
         auto_now_add=True,
