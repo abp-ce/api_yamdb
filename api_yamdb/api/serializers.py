@@ -12,6 +12,7 @@ class UserSignupSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    # username = serializers.StringRelatedField(source='user', read_only=True)
 
     class Meta:
         model = User
