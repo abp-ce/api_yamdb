@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from reviews.models import Category, Genre, GenreTitle, Title, User, Review, Comment
 
@@ -10,24 +9,26 @@ class UserSignupSerializer(serializers.ModelSerializer):
         model = User
         fields = ('username', 'email')
 
+    def validate_username(self, value):
+        if value == 'me':
+            raise serializers.ValidationError("Username me is not allowed.")
+        return value
+
+
+class UserTokenSerializer(serializers.ModelSerializer):
+    confirmation_code = serializers.CharField()
+
+    class Meta:
+        model = User
+        fields = ('username', 'confirmation_code')
+
 
 class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'bio', 'role')
-
-
-class YamdbTokenObtainPairSerializer(TokenObtainPairSerializer):
-    confirmation_code = serializers.CharField(max_length=8)
-
-    def to_internal_value(self, data):
-        resource_data = data
-        resource_data['password'] = data['confirmation_code']
-        return super().to_internal_value(resource_data)
-
-    class Meta:
-        fields = ('username', 'confirmation_code')
+        fields = ('username', 'email', 'first_name',
+                  'last_name', 'bio', 'role')
 
 
 class CategorySerializer(serializers.ModelSerializer):
