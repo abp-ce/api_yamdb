@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
-from reviews.models import Category, Genre, GenreTitle, Title, User, Review, Comment
+from reviews.models import (Category, Comment, Genre, GenreTitle, Review,
+                            Title, User)
 
 
 class UserSignupSerializer(serializers.ModelSerializer):

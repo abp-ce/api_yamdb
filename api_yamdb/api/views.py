@@ -7,8 +7,8 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
-
-from reviews.models import Category, Genre, GenreTitle, Title, User, Review, Comment
+from reviews.models import (Category, Comment, Genre, GenreTitle, Review,
+                            Title, User)
 
 from .permissions import IsAdminOrReadOnly
 from .serializers import (CategorySerializer, UserSerializer,

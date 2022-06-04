@@ -1,8 +1,8 @@
 from django.urls import include, path
 from rest_framework import routers
 
-from .views import (CategoryViewSet, UserViewSet, YamdbTokenObtainPairView,
-                    request_email, ReviewViewSet, CommentViewSet)
+from .views import (CategoryViewSet, CommentViewSet, ReviewViewSet,
+                    UserViewSet, YamdbTokenObtainPairView, request_email)
 
 # from rest_framework_simplejwt.views import TokenObtainPairView
 
