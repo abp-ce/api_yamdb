@@ -15,12 +15,21 @@ class UserSignupSerializer(serializers.ModelSerializer):
         return value
 
 
-class UserTokenSerializer(serializers.ModelSerializer):
+# class UserTokenSerializer(serializers.ModelSerializer):
+#     confirmation_code = serializers.CharField()
+
+#     class Meta:
+#         model = User
+#         fields = ('username', 'confirmation_code')
+
+
+class UserTokenSerializer(serializers.Serializer):
+    username = serializers.CharField()
     confirmation_code = serializers.CharField()
 
-    class Meta:
-        model = User
-        fields = ('username', 'confirmation_code')
+    # class Meta:
+    #     model = User
+    #     fields = ('username', 'confirmation_code')
 
 
 class UserSerializer(serializers.ModelSerializer):
