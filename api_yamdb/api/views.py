@@ -12,7 +12,8 @@ from reviews.models import Category, Comment, Genre, Review, Title, User
 from .permissions import IsAdminOrReadOnly, IsAdminRoleOnly
 from .serializers import (CategorySerializer, GenreSerializer, TitleSerializer,
                           UserSerializer, UserSignupSerializer,
-                          UserTokenSerializer, ReviewSerializer, CommentSerializer)
+                          UserTokenSerializer, ReviewSerializer,
+                          CommentSerializer)
 from .viewsets import CreateListDestroyViewSet, MeViewSet
 
 
@@ -123,14 +124,14 @@ class TitleViewSet(viewsets.ModelViewSet):
     pagination_class = PageNumberPagination
 
 
-class ReviewViewSet(CreateListDestroyViewSet):
+class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     permission_classes = (AllowAny,)
     serializer_class = ReviewSerializer
     pagination_class = PageNumberPagination
 
 
-class CommentViewSet(CreateListDestroyViewSet):
+class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     permission_classes = (AllowAny,)
     serializer_class = CommentSerializer
