@@ -6,14 +6,14 @@ from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework_simplejwt.views import TokenObtainPairView
-from reviews.models import (Category, Comment, Genre, GenreTitle, Review,
-                            Title, User)
+from rest_framework_simplejwt.tokens import RefreshToken
 
-from .permissions import IsAdminOrReadOnly
-from .serializers import (CategorySerializer, UserSerializer,
-                          UserSignupSerializer, YamdbTokenObtainPairSerializer)
-from .viewsets import CreateListDestroyViewSet, CreateViewSet
+from reviews.models import Category, Comment, Genre, Review, Title, User
+from .permissions import IsAdminOrReadOnly, IsAdminRoleOnly
+from .serializers import (CategorySerializer, GenreSerializer, TitleSerializer,
+                          UserSerializer, UserSignupSerializer,
+                          UserTokenSerializer, ReviewSerializer, CommentSerializer)
+from .viewsets import CreateListDestroyViewSet, MeViewSet
 
 
 def send_confirmation_code(user):
@@ -120,11 +120,13 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 class ReviewViewSet(CreateListDestroyViewSet):
     queryset = Review.objects.all()
-    serializer_class = CategorySerializer
+    permission_classes = (AllowAny,)
+    serializer_class = ReviewSerializer
     pagination_class = PageNumberPagination
 
 
 class CommentViewSet(CreateListDestroyViewSet):
     queryset = Comment.objects.all()
-    serializer_class = CategorySerializer
+    permission_classes = (AllowAny,)
+    serializer_class = CommentSerializer
     pagination_class = PageNumberPagination

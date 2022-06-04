@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from reviews.models import (Category, Comment, Genre, GenreTitle, Review,
                             Title, User)
 
@@ -60,11 +59,11 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Review
-        fields = ('text', 'author', 'score', 'pub_date')
+        fields = ('id', 'text', 'author', 'score', 'pub_date')
 
 
 class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ('text', 'author', 'pub_date')
+        fields = ('id', 'text', 'author', 'pub_date')

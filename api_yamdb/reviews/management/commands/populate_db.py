@@ -37,7 +37,7 @@ class Command(BaseCommand):
             self.stdout.write(filename)
             Model = FILE_MODEL_DICT[table]
             data_list = []
-            with open(filename) as csvfile:
+            with open(filename, encoding='utf-8') as csvfile:
                 reader = csv.DictReader(csvfile, delimiter=',', quotechar='"')
                 for row in reader:
                     if table == 'titles':
