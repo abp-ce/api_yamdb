@@ -25,10 +25,8 @@ class User(AbstractUser):
         blank=True,
     )
 
-    def __str__(self):
-        return self.username
-
     class Meta:
+        ordering = ('username',)
         constraints = [
             models.UniqueConstraint(
                 fields=('username', 'email'),
@@ -36,6 +34,9 @@ class User(AbstractUser):
             )
         ]
         ordering = ('username',)
+
+    def __str__(self):
+        return self.username
 
 
 class Category(models.Model):
@@ -47,6 +48,9 @@ class Category(models.Model):
         unique=True,
     )
 
+    class Meta:
+        ordering = ('name',)
+
 
 class Genre(models.Model):
     name = models.CharField(
@@ -56,6 +60,9 @@ class Genre(models.Model):
         max_length=50,
         unique=True,
     )
+
+    class Meta:
+        ordering = ('name',)
 
 
 class Title(models.Model):
@@ -71,22 +78,26 @@ class Title(models.Model):
         related_name='titles',
         null=True,
     )
+    genre = models.ManyToManyField(
+        Genre, through='GenreTitle'
+    )
     description = models.TextField(
         blank=True,
-        null=True
+        null=True,
     )
+
+    class Meta:
+        ordering = ('name',)
 
 
 class GenreTitle(models.Model):
-    title = models.ForeignKey(
-        Title,
-        on_delete=models.CASCADE,
-        related_name='genre',
-    )
     genre = models.ForeignKey(
         Genre,
         on_delete=models.CASCADE,
-        related_name='title',
+    )
+    title = models.ForeignKey(
+        Title,
+        on_delete=models.CASCADE,
     )
 
     class Meta:
