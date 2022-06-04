@@ -35,6 +35,7 @@ class IsAdminRoleOnly(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return (
-            request.user.is_authenticated
-            and request.user.username == obj.username
+            (request.user.is_authenticated and request.user.role == User.ADMIN)
+            or request.user.username == obj.username
+            or request.user.is_superuser
         )

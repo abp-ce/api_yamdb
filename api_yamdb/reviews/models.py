@@ -16,7 +16,7 @@ class User(AbstractUser):
     )
     email = models.EmailField(unique=True)
     role = models.CharField(
-        max_length=2,
+        max_length=10,
         choices=ROLE_CHOICES,
         default=USER,
     )
@@ -72,7 +72,6 @@ class Title(models.Model):
     )
     description = models.TextField(
         blank=True,
-        null=True,
     )
 
 
