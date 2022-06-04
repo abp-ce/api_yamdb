@@ -1,9 +1,5 @@
 from rest_framework import serializers
-<<<<<<< HEAD
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-=======
-
->>>>>>> master
 from reviews.models import (Category, Comment, Genre, GenreTitle, Review,
                             Title, User)
 
