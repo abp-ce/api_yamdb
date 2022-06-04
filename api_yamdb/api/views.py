@@ -88,15 +88,8 @@ class UserViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('username',)
 
-
-class UserMeViewSet(MeViewSet):
-    serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        return User.objects.all()
-
-    @action(methods=['get', 'patch'], detail=False)
+    @action(methods=['get', 'patch'], detail=False,
+            permission_classes=[IsAuthenticated])
     def me(self, request):
         serializer = self.get_serializer_class()
         data = serializer(request.user).data

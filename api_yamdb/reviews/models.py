@@ -35,6 +35,7 @@ class User(AbstractUser):
                 name='unique_username_email'
             )
         ]
+        ordering = ('username',)
 
 
 class Category(models.Model):
@@ -72,6 +73,7 @@ class Title(models.Model):
     )
     description = models.TextField(
         blank=True,
+        null=True
     )
 
 
