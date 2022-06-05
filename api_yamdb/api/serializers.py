@@ -19,21 +19,9 @@ class UserSignupSerializer(serializers.ModelSerializer):
         return value
 
 
-# class UserTokenSerializer(serializers.ModelSerializer):
-#     confirmation_code = serializers.CharField()
-
-#     class Meta:
-#         model = User
-#         fields = ('username', 'confirmation_code')
-
-
 class UserTokenSerializer(serializers.Serializer):
     username = serializers.CharField()
     confirmation_code = serializers.CharField()
-
-    # class Meta:
-    #     model = User
-    #     fields = ('username', 'confirmation_code')
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -42,6 +30,15 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('username', 'email', 'first_name',
                   'last_name', 'bio', 'role')
+
+    def validate_role(self, value):
+        if (
+            'request' in self.context
+            and self.context.get('request').user.role == 'user'
+            and value != 'user'
+        ):
+            value = 'user'
+        return value
 
 
 class CategorySerializer(serializers.ModelSerializer):

@@ -14,7 +14,7 @@ from .permissions import IsAdminOrReadOnly, IsAdminRoleOnly
 from .serializers import (CategorySerializer, GenreSerializer, TitleSerializer,
                           UserSerializer, UserSignupSerializer,
                           UserTokenSerializer)
-from .viewsets import CreateListDestroyViewSet, MeViewSet
+from .viewsets import CreateListDestroyViewSet
 
 
 def send_confirmation_code(user):
@@ -38,6 +38,7 @@ def request_email(request):
             and 'email' in serializer.errors
             and serializer.errors['username'][0].code == 'unique'
             and serializer.errors['email'][0].code == 'unique'
+            and len(serializer.errors) == 2
         ):
             user = User.objects.get(
                 username=serializer.initial_data['username']
@@ -93,8 +94,19 @@ class UserViewSet(viewsets.ModelViewSet):
             permission_classes=[IsAuthenticated])
     def me(self, request):
         serializer = self.get_serializer_class()
-        data = serializer(request.user).data
-        return Response(data, status=status.HTTP_200_OK)
+        if request.method == 'GET':
+            data = serializer(request.user).data
+            return Response(data, status=status.HTTP_200_OK)
+        if request.method == 'PATCH':
+            data = serializer(request.user, data=request.data, partial=True,
+                              context={'request': request})
+            if data.is_valid():
+                data.save()
+                return Response(data.validated_data,
+                                status=status.HTTP_200_OK)
+            else:
+                return Response(data.initial_data,
+                                status=status.HTTP_400_BAD_REQUEST)
 
 
 class CategoryViewSet(CreateListDestroyViewSet):
