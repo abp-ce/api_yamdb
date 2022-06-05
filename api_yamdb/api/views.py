@@ -9,11 +9,13 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from reviews.models import Category, Comment, Genre, Review, Title, User
-from .permissions import IsAdminOrReadOnly, IsAdminRoleOnly
-from .serializers import (CategorySerializer, GenreSerializer, TitleSerializer,
+
+from .permissions import (AuthModeratorAdminOrReadOnly, IsAdminOrReadOnly,
+                          IsAdminRoleOnly)
+from .serializers import (CategorySerializer, CommentSerializer,
+                          GenreSerializer, ReviewSerializer, TitleSerializer,
                           UserSerializer, UserSignupSerializer,
-                          UserTokenSerializer, ReviewSerializer,
-                          CommentSerializer)
+                          UserTokenSerializer)
 from .viewsets import CreateListDestroyViewSet, MeViewSet
 
 
@@ -128,11 +130,19 @@ class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     permission_classes = (AllowAny,)
     serializer_class = ReviewSerializer
-    pagination_class = PageNumberPagination
+    permission_classes = (AuthModeratorAdminOrReadOnly,)
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user,
+                        title_id=self.kwargs.get('title_id'))
 
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
-    permission_classes = (AllowAny,)
+    permission_classes = (AuthModeratorAdminOrReadOnly,)
     serializer_class = CommentSerializer
     pagination_class = PageNumberPagination
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user,
+                        review_id=self.kwargs.get('review_id'))
