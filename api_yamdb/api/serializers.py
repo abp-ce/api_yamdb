@@ -1,3 +1,5 @@
+from statistics import mean
+
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
@@ -62,10 +64,12 @@ class GenreSerializer(serializers.ModelSerializer):
 class TitleSerializer(serializers.ModelSerializer):
     category = CategorySerializer()
     genre = GenreSerializer(many=True)
+    rating = serializers.SerializerMethodField()
 
     class Meta:
         model = Title
-        fields = ('id', 'name', 'year', 'description', 'category', 'genre')
+        fields = ('id', 'name', 'year', 'rating',
+                  'description', 'category', 'genre')
 
     def create(self, validated_data):
         category_data = validated_data.pop('category')
@@ -79,16 +83,27 @@ class TitleSerializer(serializers.ModelSerializer):
             )
         return title
 
+    def get_rating(self, obj):
+        reviews = Review.objects.filter(title=obj)
+        list = []
+        for review in reviews:
+            value = review.score
+            list.append(value)
+        return int(mean(list))
+
 
 class ReviewSerializer(serializers.ModelSerializer):
+    author = serializers.PrimaryKeyRelatedField(
+        read_only=True, default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Review
-        fields = ('text', 'author', 'score', 'pub_date')
+        fields = ('id', 'text', 'author', 'score', 'pub_date',)
 
 
 class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ('text', 'author', 'pub_date')
+        fields = ('id', 'text', 'author', 'pub_date')
+        read_only_fields = ('author',)
