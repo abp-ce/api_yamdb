@@ -59,8 +59,8 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class TitleSerializer(serializers.ModelSerializer):
-    category = CategorySerializer()
-    genre = GenreSerializer(many=True)
+    category = serializers.SlugRelatedField(slug_field='slug', read_only=True)
+    genre = serializers.SlugRelatedField(slug_field='slug', read_only=True, many=True)
     rating = serializers.SerializerMethodField()
 
     class Meta:
@@ -69,15 +69,15 @@ class TitleSerializer(serializers.ModelSerializer):
                   'description', 'category', 'genre')
 
     def create(self, validated_data):
+        print(validated_data)
         category_data = validated_data.pop('category')
         genres_data = validated_data.pop('genre')
-        category = Category.get_or_create(**category_data)
+        category = Category.objects.get(slug=category_data)
         title = Title.objects.create(**validated_data, category=category)
         for genre_data in genres_data:
-            current_genre, status = Genre.objects.get_or_create(**genre_data)
-            GenreTitle.objects.create(
-                genre=current_genre, title=title
-            )
+            current_genre = Genre.objects.get(slug=genre_data)
+            title.genre.add(current_genre)
+        title.save() 
         return title
 
     def get_rating(self, obj):
