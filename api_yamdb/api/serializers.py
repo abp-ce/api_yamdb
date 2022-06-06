@@ -1,7 +1,6 @@
 from statistics import mean
 
 from rest_framework import serializers
-
 from reviews.models import Category, Comment, Genre, Review, Title, User
 
 
@@ -97,12 +96,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only=True,
         default=serializers.CurrentUserDefault(),
     )
-
-    # def validate(self, data):
-    #     if Review.objects.filter(author=self.context['request'].user.pk).exists():
-    #         raise serializers.ValidationError(
-    #             'Вы не можете подписаться на себя самого!')
-    #     return data
 
     def ValidationError(self, error):
         raise serializers.ValidationError(error)

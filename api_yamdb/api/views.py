@@ -1,5 +1,4 @@
 from django.contrib.auth.tokens import default_token_generator
-from django.forms import ValidationError
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status, viewsets
@@ -8,8 +7,8 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-
 from reviews.models import Category, Comment, Genre, Review, Title, User
+
 from .filters import TitleFilter
 from .permissions import (AuthModeratorAdminOrReadOnly, IsAdminOrReadOnly,
                           IsAdminRoleOnly)
@@ -17,8 +16,8 @@ from .serializers import (CategorySerializer, CommentSerializer,
                           GenreSerializer, ReviewSerializer, TitleSerializer,
                           TitleWriteSerializer, UserSerializer,
                           UserSignupSerializer, UserTokenSerializer)
-from .viewsets import CreateListDestroyViewSet
 from .utils import send_confirmation_code
+from .viewsets import CreateListDestroyViewSet
 
 
 @api_view(['POST'])
@@ -164,7 +163,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         title = self.get_title()
-        if title.reviews.filter(author=self.request.user).exists():
+        if title.reviews.filter(title=title,
+                                author=self.request.user).exists():
             serializer.validation_error('Already exists.')
         serializer.save(author=self.request.user, title=title)
 
