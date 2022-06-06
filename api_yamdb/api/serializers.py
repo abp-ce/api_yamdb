@@ -95,8 +95,8 @@ class TitleWriteSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    author = serializers.PrimaryKeyRelatedField(
-        read_only=True, default=serializers.CurrentUserDefault())
+    author = serializers.SlugRelatedField(
+        slug_field='username', read_only=True)
 
     class Meta:
         model = Review
@@ -104,6 +104,8 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(
+        slug_field='username', read_only=True)
 
     class Meta:
         model = Comment

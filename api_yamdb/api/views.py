@@ -160,6 +160,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
     permission_classes = (AuthModeratorAdminOrReadOnly,)
 
     def perform_create(self, serializer):
+        if Review.objects.filter(pk=self.request.user.pk).exists():
+            return
         serializer.save(author=self.request.user,
                         title_id=self.kwargs.get('title_id'))
 
