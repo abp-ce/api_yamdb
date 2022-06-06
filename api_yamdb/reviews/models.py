@@ -42,6 +42,7 @@ class User(AbstractUser):
 class Category(models.Model):
     name = models.CharField(
         max_length=256,
+        unique=True,
     )
     slug = models.SlugField(
         max_length=50,
@@ -50,11 +51,15 @@ class Category(models.Model):
 
     class Meta:
         ordering = ('name',)
+
+    def __str__(self):
+        return f'{self.name} ({self.slug})'
 
 
 class Genre(models.Model):
     name = models.CharField(
         max_length=256,
+        unique=True,
     )
     slug = models.SlugField(
         max_length=50,
@@ -63,6 +68,9 @@ class Genre(models.Model):
 
     class Meta:
         ordering = ('name',)
+
+    def __str__(self):
+        return f'{self.name} ({self.slug})'
 
 
 class Title(models.Model):
@@ -113,7 +121,7 @@ class Review(models.Model):
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
-        related_name='review',
+        related_name='reviews',
     )
     text = models.TextField()
     author = models.ForeignKey(
