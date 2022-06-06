@@ -1,5 +1,4 @@
 from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status, viewsets
@@ -18,17 +17,7 @@ from .serializers import (CategorySerializer, CommentSerializer,
                           TitleWriteSerializer, UserSerializer,
                           UserSignupSerializer, UserTokenSerializer)
 from .viewsets import CreateListDestroyViewSet
-
-
-def send_confirmation_code(user):
-    confirmation_code = default_token_generator.make_token(user)
-    send_mail(
-        subject='Confirmation code',
-        message=confirmation_code,
-        from_email='fake@yamdb.fake',
-        recipient_list=[user.email]
-    )
-    return confirmation_code
+from .utils import send_confirmation_code
 
 
 @api_view(['POST'])
@@ -36,6 +25,8 @@ def send_confirmation_code(user):
 def request_email(request):
     serializer = UserSignupSerializer(data=request.data)
     if not serializer.is_valid():
+        # Если, пользователь существует, всё равно отправляем
+        # confirmation_code.
         if (
             'username' in serializer.errors
             and 'email' in serializer.errors
