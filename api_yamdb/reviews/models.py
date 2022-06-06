@@ -143,7 +143,7 @@ class Review(models.Model):
                 name='unique_review_title'
             )
         ]
-        ordering = ('title',)
+        ordering = ('pub_date', 'id',)
 
 
 class Comment(models.Model):
@@ -160,3 +160,6 @@ class Comment(models.Model):
     pub_date = models.DateTimeField(
         auto_now_add=True,
     )
+
+    class Meta:
+        ordering = ('pub_date', 'id',)
