@@ -2,7 +2,6 @@ from statistics import mean
 
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-
 from reviews.models import (Category, Comment, Genre, GenreTitle, Review,
                             Title, User)
 
@@ -95,19 +94,21 @@ class TitleWriteSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    author = serializers.SlugRelatedField(
-        slug_field='username', read_only=True)
+    author = serializers.StringRelatedField(
+        read_only=True,
+        default=serializers.CurrentUserDefault(),
+    )
 
     class Meta:
         model = Review
-        fields = ('id', 'text', 'author', 'score', 'pub_date',)
+        fields = ('id', 'text', 'author', 'score', 'pub_date')
 
 
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
-        slug_field='username', read_only=True)
+        read_only=True, slug_field='username'
+    )
 
     class Meta:
         model = Comment
         fields = ('id', 'text', 'author', 'pub_date')
-        read_only_fields = ('author',)
