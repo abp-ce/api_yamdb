@@ -99,6 +99,15 @@ class ReviewSerializer(serializers.ModelSerializer):
         default=serializers.CurrentUserDefault(),
     )
 
+    # def validate(self, data):
+    #     if Review.objects.filter(author=self.context['request'].user.pk).exists():
+    #         raise serializers.ValidationError(
+    #             'Вы не можете подписаться на себя самого!')
+    #     return data
+
+    def ValidationError(self, error):
+        raise serializers.ValidationError(error)
+
     class Meta:
         model = Review
         fields = ('id', 'text', 'author', 'score', 'pub_date')

@@ -143,6 +143,7 @@ class Review(models.Model):
                 name='unique_review_title'
             )
         ]
+        ordering = ('title',)
 
 
 class Comment(models.Model):

@@ -1,4 +1,5 @@
 from django.contrib.auth.tokens import default_token_generator
+from django.forms import ValidationError
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status, viewsets
@@ -161,6 +162,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
+        if Review.objects.filter(title=title, author=self.request.user).exists():
+            serializer.ValidationError('Already exists.')
         serializer.save(author=self.request.user, title=title)
 
 
