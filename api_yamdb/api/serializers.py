@@ -2,7 +2,6 @@ from statistics import mean
 
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
 
 from reviews.models import (Category, Comment, Genre, GenreTitle, Review,
                             Title, User)
@@ -68,25 +67,31 @@ class TitleSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'year', 'rating',
                   'description', 'category', 'genre')
 
-    def create(self, validated_data):
-        category_data = validated_data.pop('category')
-        genres_data = validated_data.pop('genre')
-        category = Category.get_or_create(**category_data)
-        title = Title.objects.create(**validated_data, category=category)
-        for genre_data in genres_data:
-            current_genre, status = Genre.objects.get_or_create(**genre_data)
-            GenreTitle.objects.create(
-                genre=current_genre, title=title
-            )
-        return title
-
     def get_rating(self, obj):
-        reviews = Review.objects.filter(title=obj)
-        list = []
-        for review in reviews:
-            value = review.score
-            list.append(value)
-        return int(mean(list))
+        reviews = obj.reviews.all()
+        if reviews:
+            list = []
+            for review in reviews:
+                value = review.score
+                list.append(value)
+            return int(mean(list))
+        return None
+
+
+class TitleWriteSerializer(serializers.ModelSerializer):
+    category = serializers.SlugRelatedField(
+        queryset=Category.objects.all(),
+        slug_field='slug'
+    )
+    genre = serializers.SlugRelatedField(
+        queryset=Genre.objects.all(),
+        slug_field='slug',
+        many=True
+    )
+
+    class Meta:
+        model = Title
+        fields = ('id', 'name', 'year', 'description', 'genre', 'category')
 
 
 class ReviewSerializer(serializers.ModelSerializer):
