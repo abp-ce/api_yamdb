@@ -1,9 +1,8 @@
 from statistics import mean
 
-from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from reviews.models import (Category, Comment, Genre, GenreTitle, Review,
-                            Title, User)
+
+from reviews.models import Category, Comment, Genre, Review, Title, User
 
 
 class UserSignupSerializer(serializers.ModelSerializer):
@@ -102,6 +101,9 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = ('id', 'text', 'author', 'score', 'pub_date')
+
+    def validation_error(self, error):
+        raise serializers.ValidationError(error)
 
 
 class CommentSerializer(serializers.ModelSerializer):
