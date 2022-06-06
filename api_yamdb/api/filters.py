@@ -5,7 +5,8 @@ from reviews.models import Title, Genre, Category
 
 class TitleFilter(django_filters.FilterSet):
     name = django_filters.CharFilter(
-        field_name='name'
+        field_name='name',
+        lookup_expr='icontains'
     )
     category = django_filters.ModelMultipleChoiceFilter(
         field_name='category__slug',
