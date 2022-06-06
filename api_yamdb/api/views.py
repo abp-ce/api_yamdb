@@ -105,7 +105,8 @@ class UserViewSet(viewsets.ModelViewSet):
                               context={'request': request})
             if data.is_valid():
                 data.save()
-                return Response(data.validated_data,
+                user_data = UserSignupSerializer(request.user).data
+                return Response({**user_data, **data.validated_data},
                                 status=status.HTTP_200_OK)
             else:
                 return Response(data.initial_data,
