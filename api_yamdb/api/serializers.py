@@ -1,7 +1,6 @@
 from statistics import mean
 
 from rest_framework import serializers
-
 from reviews.models import Category, Comment, Genre, Review, Title, User
 
 
@@ -97,6 +96,9 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only=True,
         default=serializers.CurrentUserDefault(),
     )
+
+    def ValidationError(self, error):
+        raise serializers.ValidationError(error)
 
     class Meta:
         model = Review

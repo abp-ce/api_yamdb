@@ -1,5 +1,4 @@
 from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status, viewsets
@@ -8,8 +7,8 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+from reviews.models import Category, Genre, Review, Title, User
 
-from reviews.models import Category, Comment, Genre, Review, Title, User
 from .filters import TitleFilter
 from .permissions import (AuthModeratorAdminOrReadOnly, IsAdminOrReadOnly,
                           IsAdminRoleOnly)
@@ -17,18 +16,8 @@ from .serializers import (CategorySerializer, CommentSerializer,
                           GenreSerializer, ReviewSerializer, TitleSerializer,
                           TitleWriteSerializer, UserSerializer,
                           UserSignupSerializer, UserTokenSerializer)
+from .utils import send_confirmation_code
 from .viewsets import CreateListDestroyViewSet
-
-
-def send_confirmation_code(user):
-    confirmation_code = default_token_generator.make_token(user)
-    send_mail(
-        subject='Confirmation code',
-        message=confirmation_code,
-        from_email='fake@yamdb.fake',
-        recipient_list=[user.email]
-    )
-    return confirmation_code
 
 
 @api_view(['POST'])
@@ -36,6 +25,8 @@ def send_confirmation_code(user):
 def request_email(request):
     serializer = UserSignupSerializer(data=request.data)
     if not serializer.is_valid():
+        # Если, пользователь существует, всё равно отправляем
+        # confirmation_code.
         if (
             'username' in serializer.errors
             and 'email' in serializer.errors
@@ -158,7 +149,6 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
-    queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = (AuthModeratorAdminOrReadOnly,)
     pagination_class = PageNumberPagination
@@ -172,13 +162,13 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         title = self.get_title()
-        if title.reviews.filter(author=self.request.user).exists():
+        if title.reviews.filter(title=title,
+                                author=self.request.user).exists():
             serializer.validation_error('Already exists.')
         serializer.save(author=self.request.user, title=title)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = (AuthModeratorAdminOrReadOnly,)
     pagination_class = PageNumberPagination
