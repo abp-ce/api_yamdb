@@ -8,8 +8,8 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-
 from reviews.models import Category, Comment, Genre, Review, Title, User
+
 from .filters import TitleFilter
 from .permissions import (AuthModeratorAdminOrReadOnly, IsAdminOrReadOnly,
                           IsAdminRoleOnly)
@@ -167,14 +167,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = (AuthModeratorAdminOrReadOnly,)
     pagination_class = PageNumberPagination
-
-    def get_queryset(self):
-        title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
-        return title.reviews.all()
-
-    def get_queryset(self): 
-        queryset = Review.objects.filter(user=self.request.user, pk=self.kwargs.get('title_id')) 
-        return queryset 
 
     def perform_create(self, serializer):
         title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))

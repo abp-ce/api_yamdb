@@ -2,8 +2,6 @@ from statistics import mean
 
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
-
 from reviews.models import (Category, Comment, Genre, GenreTitle, Review,
                             Title, User)
 
@@ -96,8 +94,9 @@ class TitleWriteSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    author = serializers.SlugRelatedField(
-        read_only=True, slug_field='username'
+    author = serializers.StringRelatedField(
+        read_only=True,
+        default=serializers.CurrentUserDefault(),
     )
 
     class Meta:
