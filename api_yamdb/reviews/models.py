@@ -97,10 +97,12 @@ class Review(models.Model):
     )
     score = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(10)],
+        db_index=True
     )
     pub_date = models.DateTimeField(
         'Дата добавления',
         auto_now_add=True,
+        db_index=True
     )
 
     class Meta:
@@ -126,6 +128,7 @@ class Comment(models.Model):
     )
     pub_date = models.DateTimeField(
         auto_now_add=True,
+        db_index=True,
     )
 
     class Meta:
