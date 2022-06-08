@@ -7,7 +7,8 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from reviews.models import Category, Genre, Review, Title, User
+from reviews.models import Category, Genre, Review, Title
+from reviews.user import User
 
 from .filters import TitleFilter
 from .permissions import (AuthModeratorAdminOrReadOnly, IsAdminOrReadOnly,
@@ -24,26 +25,8 @@ from .viewsets import CreateListDestroyViewSet
 @permission_classes((AllowAny, ))
 def request_email(request):
     serializer = UserSignupSerializer(data=request.data)
-    if not serializer.is_valid():
-        # Если, пользователь существует, всё равно отправляем
-        # confirmation_code.
-        if (
-            'username' in serializer.errors
-            and 'email' in serializer.errors
-            and serializer.errors['username'][0].code == 'unique'
-            and serializer.errors['email'][0].code == 'unique'
-            and len(serializer.errors) == 2
-        ):
-            user = User.objects.get(
-                username=serializer.initial_data['username']
-            )
-            send_confirmation_code(user)
-        return Response(serializer.errors,
-                        status=status.HTTP_400_BAD_REQUEST)
-    user = User(
-        username=serializer.validated_data['username'],
-        email=serializer.validated_data['email']
-    )
+    serializer.is_valid(raise_exception=True)
+    user = User(**serializer.validated_data)
     user.save()
     send_confirmation_code(user)
     return Response(serializer.validated_data,
@@ -91,17 +74,13 @@ class UserViewSet(viewsets.ModelViewSet):
         if request.method == 'GET':
             data = serializer(request.user).data
             return Response(data, status=status.HTTP_200_OK)
-        if request.method == 'PATCH':
-            data = serializer(request.user, data=request.data, partial=True,
-                              context={'request': request})
-            if data.is_valid():
-                data.save()
-                user_data = UserSignupSerializer(request.user).data
-                return Response({**user_data, **data.validated_data},
-                                status=status.HTTP_200_OK)
-            else:
-                return Response(data.initial_data,
-                                status=status.HTTP_400_BAD_REQUEST)
+        data = serializer(request.user, data=request.data, partial=True,
+                          context={'request': request})
+        data.is_valid(raise_exception=True)
+        data.save()
+        user_data = UserSignupSerializer(request.user).data
+        return Response({**user_data, **data.validated_data},
+                        status=status.HTTP_200_OK)
 
 
 class CategoryViewSet(CreateListDestroyViewSet):
