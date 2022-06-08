@@ -117,14 +117,14 @@ class TitleViewSet(viewsets.ModelViewSet):
             return TitleWriteSerializer
         return TitleSerializer
 
-    def perform_create(self, serializer):
-        category = Category.objects.get(slug=self.request.data.get('category'))
-        if hasattr(self.request.data, 'getlist'):
-            genre_slugs = self.request.data.getlist('genre')
-        else:
-            genre_slugs = self.request.data.get('genre')
-        genres_list = Genre.objects.filter(slug__in=genre_slugs)
-        serializer.save(category=category, genre=genres_list)
+    # def perform_create(self, serializer):
+    #     category = Category.objects.get(slug=self.request.data.get('category'))
+    #     if hasattr(self.request.data, 'getlist'):
+    #         genre_slugs = self.request.data.getlist('genre')
+    #     else:
+    #         genre_slugs = self.request.data.get('genre')
+    #     genres_list = Genre.objects.filter(slug__in=genre_slugs)
+    #     serializer.save(category=category, genre=genres_list)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):

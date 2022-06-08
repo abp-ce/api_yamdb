@@ -104,6 +104,34 @@ class TitleWriteSerializer(serializers.ModelSerializer):
         many=True
     )
 
+    def create(self, validated_data):
+        category = Category.objects.get(
+            slug=validated_data.pop('category', None).slug
+        )
+        genre = validated_data.pop('genre', [])
+        title = Title.objects.create(**validated_data, category=category)
+        for gnr in genre:
+            title.genre.add(Genre.objects.get(slug=gnr.slug))
+        title.save()
+        return title
+
+    def update(self, instance, validated_data):
+        category = Category.objects.get(
+            slug=validated_data.pop('category', None).slug
+        )
+        genre = validated_data.pop('genre', [])
+        instance.name = validated_data.get("name", instance.name)
+        instance.year = validated_data.get("year", instance.year)
+        instance.description = validated_data.get(
+            "description", instance.description
+        )
+        instance.category = category
+        instance.genre.clear()
+        for gnr in genre:
+            instance.genre.add(Genre.objects.get(slug=gnr.slug))
+        instance.save()
+        return instance
+
     class Meta:
         model = Title
         fields = ('id', 'name', 'year', 'description', 'genre', 'category')
