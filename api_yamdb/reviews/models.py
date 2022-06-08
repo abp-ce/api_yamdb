@@ -10,6 +10,7 @@ class Category(models.Model):
     name = models.CharField(
         max_length=256,
         unique=True,
+        db_index=True,
     )
     slug = models.SlugField(
         max_length=50,
@@ -27,6 +28,7 @@ class Genre(models.Model):
     name = models.CharField(
         max_length=256,
         unique=True,
+        db_index=True,
     )
     slug = models.SlugField(
         max_length=50,
@@ -41,11 +43,14 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
-    name = models.TextField()
+    name = models.TextField(
+        db_index=True,
+    )
     year = models.PositiveSmallIntegerField(
         validators=(
             MaxValueValidator(datetime.datetime.now().year),
-        )
+        ),
+        db_index=True,
     )
     category = models.ForeignKey(
         Category,
