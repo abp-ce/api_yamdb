@@ -1,18 +1,36 @@
+from django.shortcuts import get_object_or_404
 from statistics import mean
+from pkg_resources import require
 
 from rest_framework import serializers
-from reviews.models import Category, Comment, Genre, Review, Title, User
+from reviews.models import Category, Comment, Genre, Review, Title
+
+from reviews.user import User
+from .utils import send_confirmation_code
 
 
-class UserSignupSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = User
-        fields = ('username', 'email')
+class UserSignupSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    email = serializers.EmailField()
 
     def validate_username(self, value):
         if value == 'me':
             raise serializers.ValidationError("Username me is not allowed.")
+        user = User.objects.filter(username=value)
+        if user.exists():
+            send_confirmation_code(user.first())
+            raise serializers.ValidationError(
+                "Username is alredy exists."
+            )
+        return value
+
+    def validate_email(self, value):
+        user = User.objects.filter(email=value)
+        if user.exists():
+            send_confirmation_code(user.first())
+            raise serializers.ValidationError(
+                "Email is alredy exists."
+            )
         return value
 
 
@@ -31,10 +49,10 @@ class UserSerializer(serializers.ModelSerializer):
     def validate_role(self, value):
         if (
             'request' in self.context
-            and self.context.get('request').user.role == 'user'
-            and value != 'user'
+            and self.context.get('request').user.role == User.USER
+            and value != User.USER
         ):
-            value = 'user'
+            value = User.USER
         return value
 
 
@@ -97,15 +115,12 @@ class ReviewSerializer(serializers.ModelSerializer):
         default=serializers.CurrentUserDefault(),
     )
 
-    def ValidationError(self, error):
-        raise serializers.ValidationError(error)
-
     class Meta:
         model = Review
         fields = ('id', 'text', 'author', 'score', 'pub_date')
 
-    def validation_error(self, error):
-        raise serializers.ValidationError(error)
+    def validation_error(self, error): 
+        raise serializers.ValidationError(error) 
 
 
 class CommentSerializer(serializers.ModelSerializer):

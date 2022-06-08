@@ -1,5 +1,5 @@
 from rest_framework import permissions
-from reviews.models import User
+from reviews.user import User
 
 
 class IsAdminOrReadOnly(permissions.BasePermission):
