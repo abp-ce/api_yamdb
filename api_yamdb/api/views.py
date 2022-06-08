@@ -7,8 +7,6 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from reviews.models import Category, Genre, Review, Title
-from reviews.user import User
 
 from .filters import TitleFilter
 from .permissions import (AuthModeratorAdminOrReadOnly, IsAdminOrReadOnly,
@@ -19,6 +17,8 @@ from .serializers import (CategorySerializer, CommentSerializer,
                           UserSignupSerializer, UserTokenSerializer)
 from .utils import send_confirmation_code
 from .viewsets import CreateListDestroyViewSet
+from reviews.models import Category, Genre, Review, Title
+from reviews.user import User
 
 
 @api_view(['POST'])
