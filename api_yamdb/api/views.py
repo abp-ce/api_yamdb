@@ -141,9 +141,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         title = self.get_title()
-        if title.reviews.filter(title=title,
-                                author=self.request.user).exists():
-            serializer.validation_error('Already exists.')
         serializer.save(author=self.request.user, title=title)
 
 
