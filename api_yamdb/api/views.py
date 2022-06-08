@@ -7,9 +7,9 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+
 from reviews.models import Category, Genre, Review, Title
 from reviews.user import User
-
 from .filters import TitleFilter
 from .permissions import (AuthModeratorAdminOrReadOnly, IsAdminOrReadOnly,
                           IsAdminRoleOnly)
@@ -116,15 +116,6 @@ class TitleViewSet(viewsets.ModelViewSet):
         if self.action in ('create', 'partial_update'):
             return TitleWriteSerializer
         return TitleSerializer
-
-    # def perform_create(self, serializer):
-    #     category = Category.objects.get(slug=self.request.data.get('category'))
-    #     if hasattr(self.request.data, 'getlist'):
-    #         genre_slugs = self.request.data.getlist('genre')
-    #     else:
-    #         genre_slugs = self.request.data.get('genre')
-    #     genres_list = Genre.objects.filter(slug__in=genre_slugs)
-    #     serializer.save(category=category, genre=genres_list)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):

@@ -1,10 +1,8 @@
+from django.db.models import Avg
 from django.shortcuts import get_object_or_404
-from statistics import mean
-from pkg_resources import require
-
 from rest_framework import serializers
-from reviews.models import Category, Comment, Genre, Review, Title
 
+from reviews.models import Category, Comment, Genre, Review, Title
 from reviews.user import User
 from .utils import send_confirmation_code
 
@@ -83,13 +81,9 @@ class TitleSerializer(serializers.ModelSerializer):
                   'description', 'category', 'genre')
 
     def get_rating(self, obj):
-        reviews = obj.reviews.all()
-        if reviews:
-            list = []
-            for review in reviews:
-                value = review.score
-                list.append(value)
-            return int(mean(list))
+        score = obj.reviews.all().aggregate(Avg('score')).get('score__avg')
+        if score:
+            return int(score)
         return None
 
 
@@ -103,34 +97,6 @@ class TitleWriteSerializer(serializers.ModelSerializer):
         slug_field='slug',
         many=True
     )
-
-    def create(self, validated_data):
-        category = Category.objects.get(
-            slug=validated_data.pop('category', None).slug
-        )
-        genre = validated_data.pop('genre', [])
-        title = Title.objects.create(**validated_data, category=category)
-        for gnr in genre:
-            title.genre.add(Genre.objects.get(slug=gnr.slug))
-        title.save()
-        return title
-
-    def update(self, instance, validated_data):
-        category = Category.objects.get(
-            slug=validated_data.pop('category', None).slug
-        )
-        genre = validated_data.pop('genre', [])
-        instance.name = validated_data.get("name", instance.name)
-        instance.year = validated_data.get("year", instance.year)
-        instance.description = validated_data.get(
-            "description", instance.description
-        )
-        instance.category = category
-        instance.genre.clear()
-        for gnr in genre:
-            instance.genre.add(Genre.objects.get(slug=gnr.slug))
-        instance.save()
-        return instance
 
     class Meta:
         model = Title
