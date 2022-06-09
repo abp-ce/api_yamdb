@@ -7,31 +7,25 @@ from reviews.models import Category, Comment, Genre, Review, Title
 from reviews.user import User
 
 
-class UserSignupSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = User
-        fields = ('username', 'email',)
+class UserSignupSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    email = serializers.EmailField()
 
     def validate_username(self, value):
         if value == 'me':
             raise serializers.ValidationError("Username me is not allowed.")
         return value
 
-    def is_valid(self, raise_exception=False):
-        if (
-            not super().is_valid()
-            and 'username' in self.errors
-            and len(self.errors['username']) == 1
-            and self.errors['username'][0].code == 'unique'
-        ):
-            send_confirmation_code(
-                User.objects.get(username=self.initial_data['username'])
-            )
-        return super().is_valid(raise_exception)
-
     def create(self, validated_data):
-        instance = super().create(validated_data)
+        user = User.objects.filter(username=validated_data['username'])
+        if user.exists():
+            instance = user.first()
+            send_confirmation_code(instance)
+            raise serializers.ValidationError("Username is already exists.")
+        if User.objects.filter(email=validated_data['email']).exists():
+            raise serializers.ValidationError("Email is already exists.")
+        instance = User(**validated_data)
+        instance.save()
         send_confirmation_code(instance)
         return instance
 
