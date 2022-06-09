@@ -15,7 +15,6 @@ from .serializers import (CategorySerializer, CommentSerializer,
                           GenreSerializer, ReviewSerializer, TitleSerializer,
                           TitleWriteSerializer, UserSerializer,
                           UserSignupSerializer, UserTokenSerializer)
-from .utils import send_confirmation_code
 from .viewsets import CreateListDestroyViewSet
 from reviews.models import Category, Genre, Review, Title
 from reviews.user import User
@@ -25,10 +24,8 @@ from reviews.user import User
 @permission_classes((AllowAny, ))
 def request_email(request):
     serializer = UserSignupSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    user = User(**serializer.validated_data)
-    user.save()
-    send_confirmation_code(user)
+    if serializer.is_valid(raise_exception=True):
+        serializer.save()
     return Response(serializer.validated_data,
                     status=status.HTTP_200_OK)
 
