@@ -1,4 +1,5 @@
 from django.db.models import Avg
+from django.db.utils import IntegrityError
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
@@ -17,15 +18,10 @@ class UserSignupSerializer(serializers.Serializer):
         return value
 
     def create(self, validated_data):
-        user = User.objects.filter(username=validated_data['username'])
-        if user.exists():
-            instance = user.first()
-            send_confirmation_code(instance)
-            raise serializers.ValidationError("Username is already exists.")
-        if User.objects.filter(email=validated_data['email']).exists():
+        try:
+            instance, _ = User.objects.get_or_create(**validated_data)
+        except IntegrityError:
             raise serializers.ValidationError("Email is already exists.")
-        instance = User(**validated_data)
-        instance.save()
         send_confirmation_code(instance)
         return instance
 
