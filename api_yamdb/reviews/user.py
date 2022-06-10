@@ -32,7 +32,6 @@ class User(AbstractUser):
                 name='unique_username_email'
             )
         ]
-        ordering = ('username',)
 
     def __str__(self):
         return self.username
