@@ -50,3 +50,7 @@ python3 manage.py migrate
 ```
 python3 manage.py runserver
 ```
+### Стек
+- Django 2.2.16
+- djangorestframework 3.12.4
+- djangorestframework-simplejwt 5.2.0
